@@ -1,20 +1,9 @@
-"""
-Este Codigo calcula datos estadsticos de un arreglo de numeros en un archivo txt y los imprime en el cmd y hace un archivo .
-"""
 import sys
 import time
 import math
 import os
 
 def calc_media(datos):
-    """Calcula la media .
-
-    Args:
-        datos: lista números.
-
-    Returns:
-        La media de los números.
-    """
     if not datos:
         return 0
     total = 0
@@ -23,14 +12,6 @@ def calc_media(datos):
     return total / len(datos)
 
 def calc_mediana(datos):
-    """Calcula la mediana 
-
-    Args:
-        datos: lista números.
-
-    Returns:
-        La mediana de los números.
-    """
     if not datos:
         return 0
     datos_ordenados = sorted(datos)
@@ -42,14 +23,6 @@ def calc_mediana(datos):
     return mediana
 
 def calc_moda(datos):
-    """Calcula moda(s) .
-
-    Args:
-        datos: lista de números.
-
-    Returns:
-        moda de los números.
-    """
     if not datos:
         return []
     conteo = {}
@@ -66,14 +39,6 @@ def calc_moda(datos):
     return modas
 
 def calc_varianza(datos):
-    """Calcula la varianza .
-
-    Args:
-        datos: lista de números.
-
-    Returns:
-        La varianza de los números 
-    """
     if not datos:
         return 0
     media = calc_media(datos)
@@ -81,46 +46,30 @@ def calc_varianza(datos):
     return calc_media(diferencias_cuadradas)
 
 def calc_desv_estandar(varianza):
-    """Calcula la desviación estándar .
-
-    Args:
-        varianza: La varianza s.
-
-    Returns:
-        La desviación estándar.
-    """
     return math.sqrt(varianza)
 
-def extr_dat(nombre_archivo_entrada): 
-    """Extrae numeros de un archivo, manejando errores.
-
-    Args:
-        nombre_archivo_entrada: La ruta al archivo de entrada.
-
-    Returns:
-        estadísticas calculadas y una lista de errores.
-    """
+def extr_dat(nombre_archivo):
     datos = []
-    errores_encontrados = [] 
+    errores = []
     try:
-        with open(nombre_archivo_entrada, 'r', encoding='utf-8') as f:  
+        with open(nombre_archivo, 'r') as f:
             for linea in f:
                 try:
                     num = float(linea.strip())
                     datos.append(num)
                 except ValueError:
-                    errores_encontrados.append(linea.strip())
+                    errores.append(linea.strip())
     except FileNotFoundError:
-        print(f"Error: Archivo '{nombre_archivo_entrada}' no encontrado.")
+        print(f"Error: Archivo '{nombre_archivo}' no encontrado.")
         return None, None
 
-    if errores_encontrados:
+    if errores:
         print("Datos inválidos encontrados en el archivo:")
-        for error in errores_encontrados:
+        for error in errores:
             print(f"- {error}")
 
     if not datos:
-        return None, None
+      return None, None
 
     media = calc_media(datos)
     mediana = calc_mediana(datos)
@@ -134,23 +83,16 @@ def extr_dat(nombre_archivo_entrada):
         "moda": moda,
         "varianza": varianza,
         "desviacion_estandar": desviacion_estandar
-    }, errores_encontrados
+    }, errores
 
-def escribir_resultados_y_archivo(resultados, nombre_archivo_salida, tiempo_transcurrido): 
-    """Escribe resultados en un archivo, agregando una versión si ya existe.
-
-    Args:
-        resultados: estadísticas calculadas.
-        nombre_archivo_salida: La ruta al archivo de salida.
-        tiempo_transcurrido: El tiempo transcurrido en segundos.
-    """
+def escribir_resultados_y_archivo(resultados, nombre_archivo, tiempo_transcurrido):
     version = 1
-    nombre_base, extension = os.path.splitext(nombre_archivo_salida)
-    while os.path.exists(nombre_archivo_salida):
-        nombre_archivo_salida = f"{nombre_base}_v{version}{extension}"
+    nombre_base, extension = os.path.splitext(nombre_archivo)  
+    while os.path.exists(nombre_archivo):
+        nombre_archivo = f"{nombre_base}_v{version}{extension}"
         version += 1
     try:
-        with open(nombre_archivo_salida, 'w', encoding='utf-8') as f:  
+        with open(nombre_archivo, 'w') as f:
             f.write(f"Estadísticas Descriptivas:\n")
             for estadistica, valor in resultados.items():
                 f.write(f"{estadistica.capitalize()}: {valor}\n")
@@ -161,7 +103,7 @@ def escribir_resultados_y_archivo(resultados, nombre_archivo_salida, tiempo_tran
             print(f"{estadistica.capitalize()}: {valor}")
         print(f"Tiempo Transcurrido: {tiempo_transcurrido:.6f} segundos")
 
-    except Exception as e:  
+    except Exception as e:
         print(f"Error al escribir los resultados en el archivo: {e}")
 
 
